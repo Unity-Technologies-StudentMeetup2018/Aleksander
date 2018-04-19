@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
-using System.Collections;
 
 namespace PathfindingCSharp
 {
     public struct Vector2 : IEquatable<Vector2>
     {
         public int x, y;
+
 
         public bool Equals(Vector2 other)
         {
@@ -102,21 +103,85 @@ namespace PathfindingCSharp
             return sb.ToString();
         }
 
-        public void ComputePath()
+        public bool ComputePath()
         {
             //TODO: Implement solution here
-            var currentPos = startPosition;
-            var bounds = mapPositions.Length;
-            while (currentPos != goalPosition)
-            {
-                
-            }
-        }
-    };
+            var frontier = new Queue<Vector2>();
+            frontier.Enqueue(startPosition);
+            var visited = new List<Vector2>();
+            //var cameFrom = new List<Vector2>();
+            var cameFrom = new Dictionary<Vector2, Vector2>();
 
-    public struct Point
-    {
-        Vector2 cameFrom;
-        bool visited;
-    }
+            while (frontier.Count > 0)
+            {
+                var current = frontier.Dequeue();
+                visited.Add(current);
+
+                if (current.Equals( goalPosition))
+                {
+
+                }
+                foreach (var point in Neighbors(current))
+                {
+                    if (visited.Contains(point) || mapPositions[point.y, point.x] == '#')
+                    {
+                        continue;
+                    }
+
+                    frontier.Enqueue(point);
+                    visited.Add(point);
+                    cameFrom[point] = current;
+                }
+            }
+
+            var currentpos = goalPosition;
+            while (!currentpos.Equals(startPosition))
+            {
+                mapPositions[currentpos.y, currentpos.x] = '@';
+                try
+                {
+                    currentpos = cameFrom[currentpos];
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public Vector2[] Neighbors(Vector2 current)
+        {
+            //DONT LOOK AT THIS CODE. ITS UGLY
+            var north = new Vector2();
+            var northeast = new Vector2();
+            var east = new Vector2();
+            var southeast = new Vector2();
+            var south = new Vector2();
+            var southwest = new Vector2();
+            var west = new Vector2();
+            var northwest = new Vector2();
+            north = current;
+            north.y += 1;
+            northeast = current;
+            northeast.x += 1; northeast.y += 1;
+            east = current;
+            east.x += 1;
+            southeast = current;
+            southeast.x += 1; southeast.y += -1;
+            south = current;
+            south.y += -1;
+            southwest = current;
+            southwest.x += -1; southwest.y += -1;
+            west = current;
+            west.x += -1;
+            northwest = current;
+            northwest.x += -1; northwest.y += 1;
+
+            return new[] { north, northeast, east, southeast, south, southwest, west, northwest };
+        }
+
+
+
+    };
 }

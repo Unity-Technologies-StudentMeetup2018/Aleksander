@@ -1,4 +1,5 @@
 ﻿using PathfindingCSharp;
+using System;
 using System.IO;
 
 namespace StudentMeetup2018
@@ -66,11 +67,13 @@ namespace StudentMeetup2018
 
             Map map = new Map(mapData, startPoint, endPoint);
 
-            if (!map.ComputePath())
-                return (int)ErrCode.UnableToFindPath;
+            map.ComputePath();
+            //if (!map.ComputePath())
+            //    return (int)ErrCode.UnableToFindPath;
 
             map.DisplayMap();
 
+            Console.ReadLine();
             return (int)ErrCode.Success;
         }
     }
